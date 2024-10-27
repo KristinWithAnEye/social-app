@@ -1,43 +1,43 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const passport = require("passport");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
-const methodOverride = require("method-override");
-const flash = require("express-flash");
-const logger = require("morgan");
-const connectDB = require("./config/database");
-const mainRoutes = require("./routes/main");
-const postRoutes = require("./routes/posts");
+const express = require("express"); // to build out the API
+const mongoose = require("mongoose"); // to talk to MongoDB database
+const passport = require("passport"); // to use different strategies for logins
+const session = require("express-session"); // to have users to stay logged in as they move across app
+const MongoStore = require("connect-mongo"); // to store the user's session in MongoDB
+const methodOverride = require("method-override"); // to override methods and use put/delete reqs
+const flash = require("express-flash"); // to show notifications for errors, info, etc.
+const logger = require("morgan"); // to show logs in console
+const connectDB = require("./config/database"); // to connect to db
+const mainRoutes = require("./routes/main"); // setup of main route
+const postRoutes = require("./routes/posts"); // setup of posts route
 
-//Use config.env file in config folder
+// use config.env file in config folder
 require("dotenv").config({ path: "./config/.env" });
 
-// Passport config
+// passport config
 require("./config/passport")(passport);
 
-//Connect To Database
+// connect to database
 connectDB();
 
-const app = express();
+const app = express(); // using express
 
-//Using EJS for views
+// using EJS for views
 app.set("view engine", "ejs");
 
-//Static Folder
+// static folder
 app.use(express.static("public"));
 
-//Body Parsing
+// body parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//Logging
+// logging
 app.use(logger("dev"));
 
-//Use forms for put / delete
+// use forms for put/delete
 app.use(methodOverride("_method"));
 
-// Setup Sessions - stored in MongoDB
+// setup of sessions - stored in MongoDB
 app.use(
   session({
     secret: "keyboard cat",
@@ -47,18 +47,18 @@ app.use(
     }),
 );
 
-// Passport middleware
+// passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Use flash messages for errors, info, ect...
+// use flash messages for errors, info, etc.
 app.use(flash());
 
-//Setup Routes For Which The Server Is Listening
+// setup of routes for which the server is listening
 app.use("/", mainRoutes);
 app.use("/post", postRoutes);
 
-//Server Running
+// server running
 app.listen(process.env.PORT, () => {
   console.log("Server is running, you better catch it!");
 });
